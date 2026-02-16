@@ -1,0 +1,17 @@
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/CMakeFiles/engine.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/CMakeFiles/chesscli.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/CMakeFiles/test.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/CMakeFiles/edit_cache.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/CMakeFiles/rebuild_cache.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/tests/CMakeFiles/engine_tests.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/tests/CMakeFiles/test.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/tests/CMakeFiles/edit_cache.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/tests/CMakeFiles/rebuild_cache.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/CMakeFiles/test.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/CMakeFiles/edit_cache.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/CMakeFiles/rebuild_cache.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/src/CMakeFiles/Catch2.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/src/CMakeFiles/test.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/src/CMakeFiles/edit_cache.dir
+/home/buzz007/Desktop/ChessEngine/Chess-Engine/build/_deps/catch2-build/src/CMakeFiles/rebuild_cache.dir

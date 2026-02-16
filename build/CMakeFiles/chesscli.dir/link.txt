@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/chesscli.dir/src/main.cpp.o -o chesscli  libengine.a 

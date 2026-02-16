@@ -1,0 +1,2 @@
+/usr/bin/ar qc libengine.a CMakeFiles/engine.dir/src/move.cpp.o CMakeFiles/engine.dir/src/board.cpp.o CMakeFiles/engine.dir/src/attacks.cpp.o CMakeFiles/engine.dir/src/movegen.cpp.o CMakeFiles/engine.dir/src/zobrist.cpp.o CMakeFiles/engine.dir/src/tt.cpp.o CMakeFiles/engine.dir/src/eval.cpp.o CMakeFiles/engine.dir/src/search.cpp.o CMakeFiles/engine.dir/src/uci_like.cpp.o
+/usr/bin/ranlib libengine.a
