@@ -4,6 +4,7 @@
 enum class MoveFlag : std::uint8_t{
 	Quiet = 0,
 	Capture = 1,
+	DoublePawnPush = 2,
 	KingCastle = 3,
 	QueenCastle = 4,
 	EnPassant = 5,
