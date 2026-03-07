@@ -29,4 +29,3 @@ struct Move{
 
 std::string move_to_uci(const Move &m);
 bool parse_uci_move(const std::string &s, Square &from, Square &to, PieceType &promo);
-
