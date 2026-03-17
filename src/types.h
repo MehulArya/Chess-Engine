@@ -57,4 +57,4 @@ inline constexpr Bitboard bb_of(Square s){
 }
 
 inline constexpr int MAX_PLY = 128;
-inline constexpr int MAX_MOVES = 268;
+inline constexpr int MAX_MOVES = 256;
