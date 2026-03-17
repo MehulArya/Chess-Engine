@@ -16,7 +16,7 @@ inline constexpr Color operator!(Color c){
 }
 
 enum class Piece : std::uint8_t{
-	Empty = 0;
+	Empty = 0,
 	WP, WN, WB, WR, WQ, WK,
 	BP, BN, BB, BR, BQ, BK
 };
@@ -33,8 +33,8 @@ enum class Castling : std::uint8_t{
 	BQ = 1 << 3	
 };
 
-inline constexpr std::uint8_t operator|(Castling a, Castling b){
-	return (std::uint8_t)a | (std::uint8_t)b;
+inline constexpr Castling operator|(Castling a, Castling b){
+	return static_cast<Castling>(static_cast<std::uint8_t>(a) | static_cast<std::uint8_t>(b));
 }	
 
 using Square = std::uint8_t;
@@ -52,9 +52,9 @@ inline constexpr int rank_of(Square s){
 }
 
 
-inline constexpr BitBoard bb_of(Square s){
-	return BitBoard(1) << s;
+inline constexpr Bitboard bb_of(Square s){
+	return Bitboard(1) << s;
 }
 
 inline constexpr int MAX_PLY = 128;
-inline constexpr int MAX_MOVES = 256;
+inline constexpr int MAX_MOVES = 268;

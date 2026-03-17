@@ -52,10 +52,10 @@ std::string move_to_uci(const Move& m){
 					       break;
 			case PieceType::Rook: pc = 'r';
 					      break;
-			case PieceType::Bishop:pc = 'b';
-					       break;
-			case PieceType::Knight:pc = 'n';
-					       break;
+			case PieceType::Bishop: pc = 'b';
+					        break;
+			case PieceType::Knight: pc = 'n';
+					        break;
 			default: break;
 		}
 		s += pc;

@@ -1,7 +1,7 @@
 #pragma once
 #include<types.h>
 
-namespace attacks;
+namespace attacks{
 
 void init();
 

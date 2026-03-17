@@ -20,7 +20,7 @@ struct Move{
 	Square to() const;
 	Piece moved() const;
 	Piece captured() const;
-	Piece promo() const;
+	PieceType promo() const;
 	MoveFlag flag() const;
 
 	bool is_capture() const;
