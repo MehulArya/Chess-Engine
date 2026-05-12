@@ -1,238 +1,151 @@
-# ♟️ Chess Engine in C++
+# Chess Engine in C++
 
-##  Description
+A work-in-progress chess engine written in modern C++.
 
-This project is a chess engine written in C++ that aims to implement classical artificial intelligence techniques such as Minimax search and Alpha–Beta pruning to compute optimal chess moves.
-The engine is being built from scratch with a strong focus on understanding internal architecture, data representation, and performance-oriented design.
+The project is being built from scratch to explore engine architecture, compact move representation, board state management, attack generation, hashing, testing, and eventually full move generation and search.
 
-Currently, the project is in its **foundation stage**, where core data types and low-level representations used throughout the engine are being defined.
+## Current Status
 
----
+The engine has moved beyond the initial type-system stage. It now contains the core board and move infrastructure needed before legal move generation and search can be completed.
 
-## Current Progress
+Implemented so far:
 
-The foundational type system has been implemented.
+- Core chess types in `types.h`
+- Compact 32-bit move representation
+- UCI coordinate move conversion and parsing
+- Board state storage using a 64-square piece array
+- FEN loading and serialization
+- Castling rights, en passant square, halfmove clock, and fullmove number tracking
+- Make/unmake move support with undo state
+- Basic check and square-attack detection
+- Precomputed knight, king, and pawn attack tables
+- Sliding attacks for bishops, rooks, and queens
+- Zobrist key generation for board positions
+- CMake build setup with warning configuration and optional sanitizers
+- Catch2 test target scaffold
 
-Completed:
+Still in progress:
 
-* Core engine type definitions
-* Square representation system
-* Bitboard utility helpers
-* Castling rights flags
-* Inline helper functions for fast computation
+- Full legal move generation
+- Perft validation
+- Evaluation function
+- Search
+- Transposition table
+- UCI protocol loop
 
-The project is currently establishing the base abstractions required before implementing board logic and move generation.
+Some files for these future modules already exist as placeholders so the project structure can grow into the planned architecture.
 
----
+## Project Structure
 
-## Type System (`types.h`)
+| Path | Purpose |
+| --- | --- |
+| `src/types.h` | Core enums, square helpers, bitboard helpers, constants |
+| `src/move.h`, `src/move.cpp` | 32-bit move encoding and UCI move helpers |
+| `src/board.h`, `src/board.cpp` | Board state, FEN, make/unmake, attack checks, Zobrist update |
+| `src/attacks.h`, `src/attacks.cpp` | Piece attack tables and sliding attack generation |
+| `src/zobrist.h` | Zobrist hash declarations |
+| `src/main.cpp` | Small CLI smoke test that initializes a board and prints FEN |
+| `tests/` | Catch2 test target scaffold |
 
-The `types.h` module defines the fundamental data structures used across the entire engine.
-This file acts as the backbone of the engine’s architecture and ensures that all future modules share consistent representations.
+## Move Representation
 
-It currently includes:
-
-**Square Representation**
-
-* Squares are encoded as integers (0–63)
-* Helper functions exist to extract file and rank
-
-**Bitboards**
-
-* Bitboards are used to represent board positions efficiently
-* Each bit corresponds to one square
-* Enables fast move generation using bitwise operations
-
-**Castling Rights**
-
-* Stored as bit flags for efficient combination and checking
-* Allows quick validation of legal castling moves
-
-**Inline Utility Functions**
-
-* `make_sq()` → creates square index
-* `file_of()` → extracts file
-* `rank_of()` → extracts rank
-* `bb_of()` → returns bitboard of a square
-
-These utilities are designed for:
-
-* speed
-* compile-time evaluation
-* zero runtime overhead
-
----
-
-## Planned Architecture
-
-The engine will be modular and organized into separate components:
-
-| Module  | Responsibility                   |
-| ------- | -------------------------------- |
-| Board   | Stores game state                |
-| Move    | Represents moves                 |
-| MoveGen | Generates legal moves            |
-| Search  | Finds best move using algorithms |
-| Eval    | Evaluates positions              |
-| UCI     | Communicates with chess GUIs     |
-
----
-
----
-
-## Move Representation (`move.h`, `move.cpp`)
-
-The engine represents chess moves using a compact **32-bit encoding** designed for efficient storage and fast access during search.  
-Each move is stored inside a `Move` structure which internally packs all move information into a single 32-bit integer.
-
-This design enables:
-
-- fast copying of moves
-- efficient storage in move lists
-- quick extraction of move properties using bit operations
-- minimal memory overhead during search
-
----
-
-### Move Encoding Layout
-
-The move representation stores several pieces of information inside a single integer using bit packing.
+Moves are packed into a 32-bit integer for fast copying, storage, and lookup during future move generation and search.
 
 | Bits | Field | Description |
-|-----|------|-------------|
-| 0–5 | To Square | Destination square (0–63) |
-| 6–11 | From Square | Origin square (0–63) |
-| 12–15 | Promotion Piece | Piece type promoted to |
-| 16–19 | Moving Piece | Piece that moves |
-| 20–23 | Captured Piece | Captured piece (if any) |
-| 24–27 | Move Flag | Special move type |
+| --- | --- | --- |
+| 0-5 | To square | Destination square, 0-63 |
+| 6-11 | From square | Origin square, 0-63 |
+| 12-15 | Promotion piece | Promotion piece type |
+| 16-19 | Moving piece | Piece being moved |
+| 20-23 | Captured piece | Captured piece, if any |
+| 24-27 | Move flag | Quiet, capture, castling, en passant, promotion, etc. |
 
-This layout allows the engine to reconstruct all move information using simple bit shifting and masking operations.
+Supported move flags:
 
----
-
-### Move Flags
-
-Special move types are represented using the `MoveFlag` enumeration.  
-These flags allow the engine to identify special moves quickly during move execution and search.
-
-Move flags include:
-
-- Quiet moves
-- Captures
-- Double pawn pushes
+- Quiet move
+- Capture
+- Double pawn push
 - King-side castling
 - Queen-side castling
-- En passant captures
-- Pawn promotions
-- Promotion captures
+- En passant
+- Promotion
+- Promotion capture
 
-Using flags simplifies the move execution logic and allows the engine to distinguish between different move behaviors efficiently.
+The move module also supports UCI-style coordinate strings such as `e2e4`, `g1f3`, and `e7e8q`.
 
----
+## Board State
 
-### Move Construction
+The `Board` class currently tracks:
 
-Moves are created using a static factory function that packs all move information into the internal 32-bit representation.
+- Piece placement
+- Side to move
+- Castling rights
+- En passant square
+- Halfmove clock
+- Fullmove number
+- Zobrist key
 
-This function receives:
+It supports loading a position from FEN and serializing the current state back to FEN. It also includes make/unmake move logic using an `Undo` record so future search can safely explore and restore positions.
 
-- the origin square
-- the destination square
-- the moving piece
-- the captured piece (if any)
-- the promotion piece (if applicable)
-- the move flag describing the move type
+## Attack Generation
 
-All values are packed into the move's internal integer using bit operations.
+The attack module includes:
 
----
+- Precomputed knight attacks
+- Precomputed king attacks
+- Precomputed pawn attacks
+- Runtime sliding attacks for bishops, rooks, and queens
 
-### Move Query Functions
+These attack helpers are used by board-level check and square-attack queries.
 
-The `Move` structure provides several helper methods that extract information from the encoded move.
+## Build
 
-These functions allow other engine modules to retrieve:
+Requirements:
 
-- origin square
-- destination square
-- moving piece
-- captured piece
-- promotion piece
-- move type
+- CMake 3.20 or newer
+- A C++17 compiler
 
-Additional utility checks are provided to determine whether a move:
-
-- captures a piece
-- promotes a pawn
-
-These helper methods make the move representation easy to use throughout the engine.
-
----
-
-### UCI Move Conversion
-
-The engine supports conversion between the internal move representation and the **UCI (Universal Chess Interface)** move format.
-
-UCI represents moves as simple coordinate strings such as:
-
-- e2e4
-- g1f3
-- e7e8q
-
-Two utility functions are implemented:
-
-- converting an internal move to a UCI string
-- parsing a UCI string into move components
-
-This functionality is essential for communicating with chess GUIs such as Arena, CuteChess, or ChessBase.
-
----
-
-### Design Goals
-
-The move system is designed with several important goals:
-
-- compact representation
-- fast bitwise operations
-- minimal memory usage
-- efficient storage in move lists
-- compatibility with the UCI protocol
-
-This move representation will be heavily used by core engine components including move generation, board updates, search algorithms, and GUI communication.
-
----
-
-## Build Instructions
-
-Clone and build using CMake:
+Build the project:
 
 ```bash
-git clone https://github.com/MehulArya/Chess-Engine.git
-mkdir build && cd build
-cmake ..
-make
+cmake -S . -B build
+cmake --build build
 ```
 
-Executable will be available once core engine modules are implemented.
+Run the current CLI:
 
----
+```bash
+./build/chesscli
+```
 
-## Project Goal
+Expected behavior right now: the executable initializes the standard starting position and prints the resulting FEN.
 
-This project is being built to deeply understand:
+## Tests
 
-* game tree search algorithms
-* engine architecture design
-* low-level performance optimization
-* bit manipulation techniques
+The test target is configured with Catch2:
 
-The focus is not just building a chess engine, but understanding how engines are engineered internally.
+```bash
+ctest --test-dir build
+```
 
----
+The current test files are scaffolds for upcoming FEN, make/unmake, perft, and search validation.
 
-## 👨‍💻 Author
+## Roadmap
+
+Next milestones:
+
+1. Implement pseudo-legal move generation.
+2. Filter legal moves by king safety.
+3. Add perft tests for move generation validation.
+4. Implement a basic material/position evaluation.
+5. Add alpha-beta search.
+6. Add a transposition table backed by Zobrist keys.
+7. Implement a proper UCI command loop for GUI compatibility.
+
+## Goal
+
+The goal is not only to build a working chess engine, but to understand how engines are structured internally: board representation, move encoding, search, evaluation, hashing, validation, and performance-oriented C++ design.
+
+## Author
 
 **Mehul Arya**
-
-
