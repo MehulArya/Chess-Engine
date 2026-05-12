@@ -1,0 +1,26 @@
+# Local documentation / notes
+implementation.md
+
+# Build output
+build/
+cmake-build-*/
+
+# Editor / IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Compiled artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -21,7 +21,7 @@ MoveFlag Move::flag() const { return MoveFlag((v >> 24) & 15u); }
 
 bool Move::is_capture() const{
 	const auto f = flag();
-	return f == MoveFlag::Promotion || f == MoveFlag::PromoCapture;
+	return f == MoveFlag::Capture || f == MoveFlag::PromoCapture || f == MoveFlag::EnPassant;
 }
 
 bool Move::is_promotion() const{
