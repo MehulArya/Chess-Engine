@@ -174,44 +174,44 @@ void Board::makeMove(Move move) {
 
     if (moved == Piece::WK) castling_rights &= ~(static_cast<std::uint8_t>(Castling::WK) | static_cast<std::uint8_t>(Castling::WQ));
     if (moved == Piece::BK) castling_rights &= ~(static_cast<std::uint8_t>(Castling::BK) | static_cast<std::uint8_t>(Castling::BQ));
-    if (moved == Piece::WR && from == 63) castling_rights &= ~static_cast<std::uint8_t>(Castling::WK);
-    if (moved == Piece::WR && from == 56) castling_rights &= ~static_cast<std::uint8_t>(Castling::WQ);
-    if (moved == Piece::BR && from == 7)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BK);
-    if (moved == Piece::BR && from == 0)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BQ);
-    if (captured == Piece::WR && to == 63) castling_rights &= ~static_cast<std::uint8_t>(Castling::WK);
-    if (captured == Piece::WR && to == 56) castling_rights &= ~static_cast<std::uint8_t>(Castling::WQ);
-    if (captured == Piece::BR && to == 7)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BK);
-    if (captured == Piece::BR && to == 0)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BQ);
+    if (moved == Piece::WR && from == 7) castling_rights &= ~static_cast<std::uint8_t>(Castling::WK);
+    if (moved == Piece::WR && from == 0) castling_rights &= ~static_cast<std::uint8_t>(Castling::WQ);
+    if (moved == Piece::BR && from == 63)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BK);
+    if (moved == Piece::BR && from == 56)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BQ);
+    if (captured == Piece::WR && to == 7) castling_rights &= ~static_cast<std::uint8_t>(Castling::WK);
+    if (captured == Piece::WR && to == 0) castling_rights &= ~static_cast<std::uint8_t>(Castling::WQ);
+    if (captured == Piece::BR && to == 63)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BK);
+    if (captured == Piece::BR && to == 56)  castling_rights &= ~static_cast<std::uint8_t>(Castling::BQ);
 
     ep_square = Square(255);
     if (flag == MoveFlag::DoublePawnPush) {
         int dir = (side_to_move == Color::White) ? +8 : -8;
-        ep_square = to + dir;
+        ep_square = from + dir;
     }
 
     if (flag == MoveFlag::KingCastle) {
         if (side_to_move == Color::White) {
-            squares[61] = Piece::WK;
-            squares[63] = Piece::Empty;
-            squares[60] = Piece::Empty;
-            squares[62] = Piece::WR;
-        } else {
-            squares[5] = Piece::BK;
-            squares[7] = Piece::Empty;
+            squares[6] = Piece::WK;
             squares[4] = Piece::Empty;
-            squares[6] = Piece::BR;
+            squares[5] = Piece::WR;
+            squares[7] = Piece::Empty;
+        } else {
+            squares[62] = Piece::BK;
+            squares[60] = Piece::Empty;
+            squares[61] = Piece::BR;
+            squares[63] = Piece::Empty;
         }
     } else if (flag == MoveFlag::QueenCastle) {
         if (side_to_move == Color::White) {
-            squares[58] = Piece::WK;
-            squares[56] = Piece::Empty;
-            squares[59] = Piece::WR;
-            squares[60] = Piece::Empty;
-        } else {
-            squares[2] = Piece::BK;
-            squares[0] = Piece::Empty;
-            squares[3] = Piece::BR;
+            squares[2] = Piece::WK;
             squares[4] = Piece::Empty;
+            squares[3] = Piece::WR;
+            squares[0] = Piece::Empty;
+        } else {
+            squares[58] = Piece::BK;
+            squares[60] = Piece::Empty;
+            squares[59] = Piece::BR;
+            squares[56] = Piece::Empty;
         }
     } else {
         squares[to] = moved;
@@ -245,7 +245,6 @@ void Board::unmakeMove(const Undo& undo) {
     Square from = undo.move.from();
     Square to = undo.move.to();
     MoveFlag flag = undo.move.flag();
-    PieceType promo = undo.move.promo();
 
     side_to_move = !side_to_move;
 
@@ -257,42 +256,43 @@ void Board::unmakeMove(const Undo& undo) {
 
     if (flag == MoveFlag::KingCastle) {
         if (side_to_move == Color::White) {
-            squares[60] = Piece::WK;
-            squares[62] = Piece::Empty;
-            squares[63] = Piece::WR;
-            squares[61] = Piece::Empty;
-        } else {
-            squares[4] = Piece::BK;
+            squares[4] = Piece::WK;
             squares[6] = Piece::Empty;
-            squares[7] = Piece::BR;
+            squares[7] = Piece::WR;
             squares[5] = Piece::Empty;
+        } else {
+            squares[60] = Piece::BK;
+            squares[62] = Piece::Empty;
+            squares[63] = Piece::BR;
+            squares[61] = Piece::Empty;
         }
     } else if (flag == MoveFlag::QueenCastle) {
         if (side_to_move == Color::White) {
-            squares[60] = Piece::WK;
-            squares[59] = Piece::Empty;
-            squares[56] = Piece::WR;
-            squares[58] = Piece::Empty;
-        } else {
-            squares[4] = Piece::BK;
-            squares[3] = Piece::Empty;
-            squares[0] = Piece::BR;
+            squares[4] = Piece::WK;
             squares[2] = Piece::Empty;
+            squares[0] = Piece::WR;
+            squares[3] = Piece::Empty;
+        } else {
+            squares[60] = Piece::BK;
+            squares[58] = Piece::Empty;
+            squares[56] = Piece::BR;
+            squares[59] = Piece::Empty;
         }
     } else {
-        if (flag == MoveFlag::Promotion || flag == MoveFlag::PromoCapture) {
+        if (flag == MoveFlag::EnPassant) {
+            squares[from] = undo.move.moved();
+            squares[to] = Piece::Empty;
+
+            Square cap_sq = to + ((side_to_move == Color::White) ? -8 : +8);
+            Piece cap_pawn = (side_to_move == Color::White) ? Piece::BP : Piece::WP;
+            squares[cap_sq] = cap_pawn;
+        } else if (flag == MoveFlag::Promotion || flag == MoveFlag::PromoCapture) {
             Piece original_pawn = (side_to_move == Color::White) ? Piece::WP : Piece::BP;
             squares[from] = original_pawn;
             squares[to] = undo.captured;
         } else {
             squares[from] = undo.move.moved();
             squares[to] = undo.captured;
-        }
-
-        if (flag == MoveFlag::EnPassant) {
-            Square cap_sq = to + ((side_to_move == Color::White) ? -8 : +8);
-            Piece cap_pawn = (side_to_move == Color::White) ? Piece::BP : Piece::WP;
-            squares[cap_sq] = cap_pawn;
         }
     }
 }

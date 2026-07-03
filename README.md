@@ -19,6 +19,7 @@ Implemented so far:
 - FEN roundtrip coverage for board placement and state fields
 - Castling rights, en passant square, halfmove clock, and fullmove number tracking
 - Make/unmake move support with undo state
+- Make/unmake coverage for quiet moves, captures, double pawn pushes, promotions, en passant, and castling
 - Basic check and square-attack detection
 - Precomputed knight, king, and pawn attack tables
 - Sliding attacks for bishops, rooks, and queens
@@ -130,7 +131,7 @@ The test target is configured with Catch2:
 ctest --test-dir build
 ```
 
-The current test suite covers UCI move parsing/formatting and FEN roundtrips for board placement, side to move, castling rights, en passant square, halfmove clock, and fullmove number. Make/unmake, perft, and search tests are still upcoming.
+The current test suite covers UCI move parsing/formatting, FEN roundtrips for board placement and state fields, and make/unmake restoration for quiet moves, captures, double pawn pushes, promotions, en passant, and castling. Perft and search tests are still upcoming.
 
 ## Roadmap
 
