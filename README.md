@@ -29,7 +29,7 @@ Implemented so far:
 
 Still in progress:
 
-- Full legal move generation
+- Legal move filtering
 - Perft validation
 - Evaluation function
 - Search
@@ -131,7 +131,7 @@ The test target is configured with Catch2:
 ctest --test-dir build
 ```
 
-The current test suite covers UCI move parsing/formatting, FEN roundtrips for board placement and state fields, and make/unmake restoration for quiet moves, captures, double pawn pushes, promotions, en passant, and castling. Perft and search tests are still upcoming.
+The current test suite covers UCI move parsing/formatting, FEN roundtrips for board placement and state fields, make/unmake restoration for quiet moves, captures, double pawn pushes, promotions, en passant, and castling, and pseudo-legal move generation in the starting position. Perft and search tests are still upcoming.
 
 ## Roadmap
 

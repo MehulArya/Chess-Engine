@@ -9,6 +9,7 @@ add_executable(engine_tests
 test_perft.cpp
 test_fen.cpp
 test_make_unmake.cpp
+test_movegen.cpp
 test_search_smoke.cpp
 )
 target_link_libraries(engine_tests PRIVATE engine Catch2::Catch2WithMain)
