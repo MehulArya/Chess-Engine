@@ -43,7 +43,7 @@ std::string move_to_uci(const Move& m){
 	s += file_to_char(f1); 
 	s += rank_to_char(r1);
 	s += file_to_char(f2);
-	s += file_to_char(r2);
+	s += rank_to_char(r2);
 
 	if(m.is_promotion()){
 		char pc = 'q';

@@ -41,7 +41,7 @@ void Board::setFen(const std::string& fen) {
     std::istringstream iss(fen);
     std::string board_part, side_part, castling_part, ep_part;
 
-    iss >> board_part >> side_part >> castling_part >> ep_part;
+    iss >> board_part >> side_part >> castling_part >> ep_part >> halfmove_clock >> fullmove_number;
 
     int sq = 56;
     for (char c : board_part) {

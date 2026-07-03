@@ -13,8 +13,10 @@ Implemented so far:
 - Core chess types in `types.h`
 - Compact 32-bit move representation
 - UCI coordinate move conversion and parsing
+- Unit coverage for UCI move parsing/formatting
 - Board state storage using a 64-square piece array
 - FEN loading and serialization
+- FEN roundtrip coverage for board placement and state fields
 - Castling rights, en passant square, halfmove clock, and fullmove number tracking
 - Make/unmake move support with undo state
 - Basic check and square-attack detection
@@ -128,7 +130,7 @@ The test target is configured with Catch2:
 ctest --test-dir build
 ```
 
-The current test files are scaffolds for upcoming FEN, make/unmake, perft, and search validation.
+The current test suite covers UCI move parsing/formatting and FEN roundtrips for board placement, side to move, castling rights, en passant square, halfmove clock, and fullmove number. Make/unmake, perft, and search tests are still upcoming.
 
 ## Roadmap
 
