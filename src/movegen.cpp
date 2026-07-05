@@ -215,3 +215,17 @@ void generatePseudoLegalMoves(const Board& board, MoveList& out) {
         }
     }
 }
+
+void generateLegalMoves(const Board& board, MoveList& out) {
+    MoveList pseudo;
+    generatePseudoLegalMoves(board, pseudo);
+
+    out.clear();
+    for (std::size_t i = 0; i < pseudo.count; ++i) {
+        Board next = board;
+        next.makeMove(pseudo.moves[i]);
+        if (!next.isInCheck(!next.side_to_move)) {
+            out.add(pseudo.moves[i]);
+        }
+    }
+}

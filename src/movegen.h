@@ -13,3 +13,4 @@ struct MoveList {
 };
 
 void generatePseudoLegalMoves(const Board& board, MoveList& out);
+void generateLegalMoves(const Board& board, MoveList& out);
