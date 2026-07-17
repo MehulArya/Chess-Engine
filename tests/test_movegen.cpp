@@ -40,3 +40,36 @@ TEST_CASE("Pseudo-legal move generation returns 20 moves in the starting positio
 
     REQUIRE(to_uci_sorted(list) == expected);
 }
+
+TEST_CASE("Legal move generation returns 20 moves in the starting position", "[movegen]") {
+    attacks::init();
+    zobrist::init();
+
+    Board board;
+    board.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+    MoveList list;
+    generateLegalMoves(board, list);
+
+    REQUIRE(list.count == 20);
+    REQUIRE(to_uci_sorted(list) == std::vector<std::string>{
+        "a2a3", "a2a4", "b1a3", "b1c3", "b2b3", "b2b4", "c2c3", "c2c4",
+        "d2d3", "d2d4", "e2e3", "e2e4", "f2f3", "f2f4", "g1f3", "g1h3",
+        "g2g3", "g2g4", "h2h3", "h2h4"
+    });
+}
+
+TEST_CASE("Legal move generation removes moves that expose the king", "[movegen]") {
+    attacks::init();
+    zobrist::init();
+
+    Board board;
+    board.setFen("4r3/8/8/8/8/8/4R3/4K3 w - - 0 1");
+
+    MoveList list;
+    generateLegalMoves(board, list);
+
+    const auto moves = to_uci_sorted(list);
+    REQUIRE(std::find(moves.begin(), moves.end(), "e2f2") == moves.end());
+    REQUIRE(std::find(moves.begin(), moves.end(), "e2e3") != moves.end());
+}
