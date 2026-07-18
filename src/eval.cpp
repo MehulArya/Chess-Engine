@@ -6,7 +6,7 @@ static const int BISHOP_VALUE = 330;
 static const int ROOK_VALUE = 500;
 static const int QUEEN_VALUE = 900;
 
-static const int PST[6][64] = {
+static const int PST[6][64] = {                 // Piece Square Table 
     {
          0,  0,  0,  0,  0,  0,  0,  0,
         50, 50, 50, 50, 50, 50, 50, 50,

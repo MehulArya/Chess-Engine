@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 280" font-family="Consolas, monospace">
+  <rect width="800" height="280" fill="#1e1e2e" rx="12"/>
+  <text x="30" y="35" fill="#cba6f7" font-size="18" font-family="sans-serif" font-weight="bold">32-bit Move Encoding</text>
+
+  <!-- Bit fields as colored boxes -->
+  <!-- To: 0-5 -->
+  <rect x="30" y="60" width="160" height="50" fill="#89b4fa" rx="4"/>
+  <text x="110" y="91" fill="#1e1e2e" font-size="14" font-weight="bold" text-anchor="middle">To (0-5)</text>
+  
+  <!-- From: 6-11 -->
+  <rect x="190" y="60" width="160" height="50" fill="#89dceb" rx="4"/>
+  <text x="270" y="91" fill="#1e1e2e" font-size="14" font-weight="bold" text-anchor="middle">From (6-11)</text>
+  
+  <!-- Promo: 12-15 -->
+  <rect x="350" y="60" width="120" height="50" fill="#a6e3a1" rx="4"/>
+  <text x="410" y="91" fill="#1e1e2e" font-size="14" font-weight="bold" text-anchor="middle">Promo (12-15)</text>
+  
+  <!-- Moved: 16-19 -->
+  <rect x="470" y="60" width="100" height="50" fill="#fab387" rx="4"/>
+  <text x="520" y="91" fill="#1e1e2e" font-size="14" font-weight="bold" text-anchor="middle">Moved (16-19)</text>
+  
+  <!-- Captured: 20-23 -->
+  <rect x="570" y="60" width="100" height="50" fill="#f38ba8" rx="4"/>
+  <text x="620" y="91" fill="#1e1e2e" font-size="14" font-weight="bold" text-anchor="middle">Capt (20-23)</text>
+  
+  <!-- Flag: 24-27 -->
+  <rect x="670" y="60" width="100" height="50" fill="#cba6f7" rx="4"/>
+  <text x="720" y="91" fill="#1e1e2e" font-size="14" font-weight="bold" text-anchor="middle">Flag (24-27)</text>
+
+  <!-- Bit index labels -->
+  <text x="110" y="130" fill="#89b4fa" font-size="11" text-anchor="middle">0-5</text>
+  <text x="270" y="130" fill="#89dceb" font-size="11" text-anchor="middle">6-11</text>
+  <text x="410" y="130" fill="#a6e3a1" font-size="11" text-anchor="middle">12-15</text>
+  <text x="520" y="130" fill="#fab387" font-size="11" text-anchor="middle">16-19</text>
+  <text x="620" y="130" fill="#f38ba8" font-size="11" text-anchor="middle">20-23</text>
+  <text x="720" y="130" fill="#cba6f7" font-size="11" text-anchor="middle">24-27</text>
+
+  <!-- Example: e2e4 -->
+  <text x="30" y="170" fill="#cdd6f4" font-size="14">Example: Move "e2e4" (white pawn from e2 to e4)</text>
+  
+  <rect x="30" y="185" width="160" height="36" fill="#89b4fa" rx="4"/>
+  <text x="110" y="208" fill="#1e1e2e" font-size="13" text-anchor="middle" font-weight="bold">To: 28 (e4)</text>
+  
+  <rect x="190" y="185" width="160" height="36" fill="#89dceb" rx="4"/>
+  <text x="270" y="208" fill="#1e1e2e" font-size="13" text-anchor="middle" font-weight="bold">From: 12 (e2)</text>
+  
+  <rect x="350" y="185" width="120" height="36" fill="#a6e3a1" rx="4"/>
+  <text x="410" y="208" fill="#1e1e2e" font-size="13" text-anchor="middle" font-weight="bold">Promo: None</text>
+  
+  <rect x="470" y="185" width="100" height="36" fill="#fab387" rx="4"/>
+  <text x="520" y="208" fill="#1e1e2e" font-size="13" text-anchor="middle" font-weight="bold">Moved: WP</text>
+  
+  <rect x="570" y="185" width="100" height="36" fill="#f38ba8" rx="4"/>
+  <text x="620" y="208" fill="#1e1e2e" font-size="13" text-anchor="middle" font-weight="bold">Capt: Empty</text>
+  
+  <rect x="670" y="185" width="100" height="36" fill="#cba6f7" rx="4"/>
+  <text x="720" y="208" fill="#1e1e2e" font-size="13" text-anchor="middle" font-weight="bold">Flag: Quiet</text>
+
+  <!-- Legend: Move flags -->
+  <text x="30" y="250" fill="#cdd6f4" font-size="13">Move Flags: Quiet=0 | Capture=1 | DblPawn=2 | KCastle=3 | QCastle=4 | EnPassant=5 | Promo=6 | PromoCap=7</text>
+</svg>

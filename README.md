@@ -55,6 +55,10 @@ Still in progress:
 | `src/main.cpp` | Entry point that initializes tables and starts UCI loop |
 | `tests/` | Catch2 test target |
 
+<p align="center">
+  <img src="images/architecture.svg" alt="Engine Architecture" width="600">
+</p>
+
 ## Move Representation
 
 Moves are packed into a 32-bit integer for fast copying, storage, and lookup during search. The 32-bit value is divided into bit fields:
@@ -74,6 +78,10 @@ UCI conversion is handled by two functions:
 - `move_to_uci()` converts a `Move` to a string like `"e2e4"` or `"e7e8q"`
 - `parse_uci_move()` converts a string back to from/to squares and promotion piece type
 
+<p align="center">
+  <img src="images/move_encoding.svg" alt="32-bit Move Encoding" width="650">
+</p>
+
 ## Board State
 
 The `Board` class uses a `std::array<Piece, 64>` for piece placement, indexed by a `Square` (0-63, rank-major order: `rank * 8 + file`). State fields tracked:
@@ -84,6 +92,10 @@ The `Board` class uses a `std::array<Piece, 64>` for piece placement, indexed by
 - **halfmove_clock**: For the 50-move rule
 - **fullmove_number**: Incremented after Black's moves
 - **zobrist_key**: 64-bit hash of the position
+
+<p align="center">
+  <img src="images/board_squares.svg" alt="Square Indexing" width="420">
+</p>
 
 ### makeMove()
 
@@ -258,6 +270,10 @@ alpha_beta(board, depth, alpha, beta, ply):
 ```
 
 The `-INF + ply` scoring ensures that among different forced mates, the engine prefers the shortest mate (lowest ply gets a higher score because less was subtracted from INF).
+
+<p align="center">
+  <img src="images/alpha_beta.svg" alt="Alpha-Beta Pruning" width="580">
+</p>
 
 ### search_best_move()
 

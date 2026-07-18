@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520" font-family="sans-serif">
+  <rect width="520" height="520" fill="#1e1e2e" rx="12"/>
+  <text x="20" y="35" fill="#cba6f7" font-size="18" font-weight="bold">Square Indexing (0-63, rank-major)</text>
+  
+  <!-- Chessboard -->
+  <g transform="translate(20, 55)">
+    <rect x="0" y="0" width="400" height="400" fill="#45475a" rx="2"/>
+    
+    <!-- Squares with indices -->
+    <!-- Rank 8 (index 56-63) -->
+    <rect x="0" y="0" width="50" height="50" fill="#b8c0e0"/>
+    <text x="25" y="20" fill="#1e1e2e" font-size="11" text-anchor="middle">56</text>
+    <text x="25" y="35" fill="#1e1e2e" font-size="9" text-anchor="middle">a8</text>
+    
+    <rect x="50" y="0" width="50" height="50" fill="#588157"/>
+    <text x="75" y="20" fill="#fff" font-size="11" text-anchor="middle">57</text>
+    <text x="75" y="35" fill="#fff" font-size="9" text-anchor="middle">b8</text>
+    
+    <rect x="100" y="0" width="50" height="50" fill="#b8c0e0"/>
+    <text x="125" y="20" fill="#1e1e2e" font-size="11" text-anchor="middle">58</text>
+    <text x="125" y="35" fill="#1e1e2e" font-size="9" text-anchor="middle">c8</text>
+    
+    <rect x="150" y="0" width="50" height="50" fill="#588157"/>
+    <text x="175" y="20" fill="#fff" font-size="11" text-anchor="middle">59</text>
+    <text x="175" y="35" fill="#fff" font-size="9" text-anchor="middle">d8</text>
+    
+    <rect x="200" y="0" width="50" height="50" fill="#b8c0e0"/>
+    <text x="225" y="20" fill="#1e1e2e" font-size="11" text-anchor="middle">60</text>
+    <text x="225" y="35" fill="#1e1e2e" font-size="9" text-anchor="middle">e8</text>
+    
+    <rect x="250" y="0" width="50" height="50" fill="#588157"/>
+    <text x="275" y="20" fill="#fff" font-size="11" text-anchor="middle">61</text>
+    <text x="275" y="35" fill="#fff" font-size="9" text-anchor="middle">f8</text>
+    
+    <rect x="300" y="0" width="50" height="50" fill="#b8c0e0"/>
+    <text x="325" y="20" fill="#1e1e2e" font-size="11" text-anchor="middle">62</text>
+    <text x="325" y="35" fill="#1e1e2e" font-size="9" text-anchor="middle">g8</text>
+    
+    <rect x="350" y="0" width="50" height="50" fill="#588157"/>
+    <text x="375" y="20" fill="#fff" font-size="11" text-anchor="middle">63</text>
+    <text x="375" y="35" fill="#fff" font-size="9" text-anchor="middle">h8</text>
+
+    <!-- Rank 7 (index 48-55) -->
+    <rect x="0" y="50" width="50" height="50" fill="#588157"/>
+    <text x="25" y="70" fill="#fff" font-size="11" text-anchor="middle">48</text>
+    <text x="25" y="85" fill="#fff" font-size="9" text-anchor="middle">a7</text>
+    
+    <rect x="50" y="50" width="50" height="50" fill="#b8c0e0"/>
+    <text x="75" y="70" fill="#1e1e2e" font-size="11" text-anchor="middle">49</text>
+    <text x="75" y="85" fill="#1e1e2e" font-size="9" text-anchor="middle">b7</text>
+    
+    <rect x="100" y="50" width="50" height="50" fill="#588157"/>
+    <text x="125" y="70" fill="#fff" font-size="11" text-anchor="middle">50</text>
+    <text x="125" y="85" fill="#fff" font-size="9" text-anchor="middle">c7</text>
+    
+    <rect x="150" y="50" width="50" height="50" fill="#b8c0e0"/>
+    <text x="175" y="70" fill="#1e1e2e" font-size="11" text-anchor="middle">51</text>
+    <text x="175" y="85" fill="#1e1e2e" font-size="9" text-anchor="middle">d7</text>
+    
+    <rect x="200" y="50" width="50" height="50" fill="#588157"/>
+    <text x="225" y="70" fill="#fff" font-size="11" text-anchor="middle">52</text>
+    <text x="225" y="85" fill="#fff" font-size="9" text-anchor="middle">e7</text>
+    
+    <rect x="250" y="50" width="50" height="50" fill="#b8c0e0"/>
+    <text x="275" y="70" fill="#1e1e2e" font-size="11" text-anchor="middle">53</text>
+    <text x="275" y="85" fill="#1e1e2e" font-size="9" text-anchor="middle">f7</text>
+    
+    <rect x="300" y="50" width="50" height="50" fill="#588157"/>
+    <text x="325" y="70" fill="#fff" font-size="11" text-anchor="middle">54</text>
+    <text x="325" y="85" fill="#fff" font-size="9" text-anchor="middle">g7</text>
+    
+    <rect x="350" y="50" width="50" height="50" fill="#b8c0e0"/>
+    <text x="375" y="70" fill="#1e1e2e" font-size="11" text-anchor="middle">55</text>
+    <text x="375" y="85" fill="#1e1e2e" font-size="9" text-anchor="middle">h7</text>
+
+    <!-- Rank 2 (index 8-15) -->
+    <rect x="0" y="300" width="50" height="50" fill="#b8c0e0"/>
+    <text x="25" y="320" fill="#1e1e2e" font-size="11" text-anchor="middle">8</text>
+    <text x="25" y="335" fill="#1e1e2e" font-size="9" text-anchor="middle">a2</text>
+    
+    <rect x="50" y="300" width="50" height="50" fill="#588157"/>
+    <text x="75" y="320" fill="#fff" font-size="11" text-anchor="middle">9</text>
+    <text x="75" y="335" fill="#fff" font-size="9" text-anchor="middle">b2</text>
+    
+    <rect x="100" y="300" width="50" height="50" fill="#b8c0e0"/>
+    <text x="125" y="320" fill="#1e1e2e" font-size="11" text-anchor="middle">10</text>
+    <text x="125" y="335" fill="#1e1e2e" font-size="9" text-anchor="middle">c2</text>
+    
+    <rect x="150" y="300" width="50" height="50" fill="#588157"/>
+    <text x="175" y="320" fill="#fff" font-size="11" text-anchor="middle">11</text>
+    <text x="175" y="335" fill="#fff" font-size="9" text-anchor="middle">d2</text>
+    
+    <rect x="200" y="300" width="50" height="50" fill="#b8c0e0"/>
+    <text x="225" y="320" fill="#1e1e2e" font-size="11" text-anchor="middle">12</text>
+    <text x="225" y="335" fill="#1e1e2e" font-size="9" text-anchor="middle">e2</text>
+    
+    <rect x="250" y="300" width="50" height="50" fill="#588157"/>
+    <text x="275" y="320" fill="#fff" font-size="11" text-anchor="middle">13</text>
+    <text x="275" y="335" fill="#fff" font-size="9" text-anchor="middle">f2</text>
+    
+    <rect x="300" y="300" width="50" height="50" fill="#b8c0e0"/>
+    <text x="325" y="320" fill="#1e1e2e" font-size="11" text-anchor="middle">14</text>
+    <text x="325" y="335" fill="#1e1e2e" font-size="9" text-anchor="middle">g2</text>
+    
+    <rect x="350" y="300" width="50" height="50" fill="#588157"/>
+    <text x="375" y="320" fill="#fff" font-size="11" text-anchor="middle">15</text>
+    <text x="375" y="335" fill="#fff" font-size="9" text-anchor="middle">h2</text>
+
+    <!-- Rank 1 (index 0-7) -->
+    <rect x="0" y="350" width="50" height="50" fill="#588157"/>
+    <text x="25" y="370" fill="#fff" font-size="11" text-anchor="middle">0</text>
+    <text x="25" y="385" fill="#fff" font-size="9" text-anchor="middle">a1</text>
+    
+    <rect x="50" y="350" width="50" height="50" fill="#b8c0e0"/>
+    <text x="75" y="370" fill="#1e1e2e" font-size="11" text-anchor="middle">1</text>
+    <text x="75" y="385" fill="#1e1e2e" font-size="9" text-anchor="middle">b1</text>
+    
+    <rect x="100" y="350" width="50" height="50" fill="#588157"/>
+    <text x="125" y="370" fill="#fff" font-size="11" text-anchor="middle">2</text>
+    <text x="125" y="385" fill="#fff" font-size="9" text-anchor="middle">c1</text>
+    
+    <rect x="150" y="350" width="50" height="50" fill="#b8c0e0"/>
+    <text x="175" y="370" fill="#1e1e2e" font-size="11" text-anchor="middle">3</text>
+    <text x="175" y="385" fill="#1e1e2e" font-size="9" text-anchor="middle">d1</text>
+    
+    <rect x="200" y="350" width="50" height="50" fill="#588157"/>
+    <text x="225" y="370" fill="#fff" font-size="11" text-anchor="middle">4</text>
+    <text x="225" y="385" fill="#fff" font-size="9" text-anchor="middle">e1</text>
+    
+    <rect x="250" y="350" width="50" height="50" fill="#b8c0e0"/>
+    <text x="275" y="370" fill="#1e1e2e" font-size="11" text-anchor="middle">5</text>
+    <text x="275" y="385" fill="#1e1e2e" font-size="9" text-anchor="middle">f1</text>
+    
+    <rect x="300" y="350" width="50" height="50" fill="#588157"/>
+    <text x="325" y="370" fill="#fff" font-size="11" text-anchor="middle">6</text>
+    <text x="325" y="385" fill="#fff" font-size="9" text-anchor="middle">g1</text>
+    
+    <rect x="350" y="350" width="50" height="50" fill="#b8c0e0"/>
+    <text x="375" y="370" fill="#1e1e2e" font-size="11" text-anchor="middle">7</text>
+    <text x="375" y="385" fill="#1e1e2e" font-size="9" text-anchor="middle">h1</text>
+
+    <!-- Coordinate labels -->
+    <text x="25" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">a</text>
+    <text x="75" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">b</text>
+    <text x="125" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">c</text>
+    <text x="175" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">d</text>
+    <text x="225" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">e</text>
+    <text x="275" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">f</text>
+    <text x="325" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">g</text>
+    <text x="375" y="422" fill="#a6adc8" font-size="12" text-anchor="middle">h</text>
+    
+    <text x="-10" y="25" fill="#a6adc8" font-size="12" text-anchor="end">8</text>
+    <text x="-10" y="75" fill="#a6adc8" font-size="12" text-anchor="end">7</text>
+    <text x="-10" y="125" fill="#a6adc8" font-size="12" text-anchor="end">6</text>
+    <text x="-10" y="175" fill="#a6adc8" font-size="12" text-anchor="end">5</text>
+    <text x="-10" y="225" fill="#a6adc8" font-size="12" text-anchor="end">4</text>
+    <text x="-10" y="275" fill="#a6adc8" font-size="12" text-anchor="end">3</text>
+    <text x="-10" y="325" fill="#a6adc8" font-size="12" text-anchor="end">2</text>
+    <text x="-10" y="375" fill="#a6adc8" font-size="12" text-anchor="end">1</text>
+  </g>
+  
+  <!-- Formula note -->
+  <text x="20" y="490" fill="#585b70" font-size="13">square = rank * 8 + file &nbsp;|&nbsp; e.g. e4  →  rank=3, file=4  →  3*8+4 = 28</text>
+</svg>
