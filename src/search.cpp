@@ -1,6 +1,7 @@
 #include "search.h"
 #include "movegen.h"
 #include "eval.h"
+#include "tt.h"
 #include <algorithm>
 #include <climits>
 #include <cstring>
@@ -19,10 +20,12 @@ static int mvv_lva_score(Move move) {
     return victim_values[static_cast<int>(captured)] * 10 - attacker_values[static_cast<int>(moved)];
 }
 
-static void score_moves(MoveList& moves, int* scores, Move killer1, Move killer2) {
+static void score_moves(MoveList& moves, int* scores, Move tt_move, Move killer1, Move killer2) {
     for (std::size_t i = 0; i < moves.count; ++i) {
         int score = mvv_lva_score(moves.moves[i]);
-        if (moves.moves[i].v == killer1.v || moves.moves[i].v == killer2.v) {
+        if (moves.moves[i].v == tt_move.v) {
+            score = 100000;
+        } else if (moves.moves[i].v == killer1.v || moves.moves[i].v == killer2.v) {
             if (score == 0) score = 50000;
         }
         scores[i] = score;
@@ -43,7 +46,7 @@ static int quiescence(Board& board, int alpha, int beta, int ply) {
     generateLegalMoves(board, moves);
 
     int scores[256];
-    score_moves(moves, scores, Move{0}, Move{0});
+    score_moves(moves, scores, Move{0}, Move{0}, Move{0});
 
     for (std::size_t i = 0; i < moves.count; ++i) {
         std::size_t best_idx = i;
@@ -104,6 +107,23 @@ int alpha_beta(Board& board, int depth, int alpha, int beta, int ply) {
         return quiescence(board, alpha, beta, ply);
     }
 
+    TTEntry entry;
+    Move tt_move{0};
+    if (tt.probe(board.zobrist_key, entry)) {
+        if (entry.depth >= depth) {
+            if (entry.flag == TT_EXACT) {
+                return entry.score;
+            }
+            if (entry.flag == TT_LOWER && entry.score >= beta) {
+                return beta;
+            }
+            if (entry.flag == TT_UPPER && entry.score <= alpha) {
+                return alpha;
+            }
+        }
+        tt_move = entry.best_move;
+    }
+
     MoveList moves;
     generateLegalMoves(board, moves);
 
@@ -117,7 +137,10 @@ int alpha_beta(Board& board, int depth, int alpha, int beta, int ply) {
     int scores[256];
     Move killer1 = (ply < MAX_PLY) ? killer_moves[ply][0] : Move{0};
     Move killer2 = (ply < MAX_PLY) ? killer_moves[ply][1] : Move{0};
-    score_moves(moves, scores, killer1, killer2);
+    score_moves(moves, scores, tt_move, killer1, killer2);
+
+    Move best_move_in_branch = moves.moves[0];
+    int original_alpha = alpha;
 
     for (std::size_t i = 0; i < moves.count; ++i) {
         std::size_t best_idx = i;
@@ -160,13 +183,17 @@ int alpha_beta(Board& board, int depth, int alpha, int beta, int ply) {
                     }
                 }
             }
+            tt.store(board.zobrist_key, score, moves.moves[i], depth, TT_LOWER);
             return beta;
         }
         if (score > alpha) {
             alpha = score;
+            best_move_in_branch = moves.moves[i];
         }
     }
 
+    std::uint8_t flag = (alpha > original_alpha) ? TT_EXACT : TT_UPPER;
+    tt.store(board.zobrist_key, alpha, best_move_in_branch, depth, flag);
     return alpha;
 }
 
@@ -175,7 +202,7 @@ Move search_best_move(Board& board, int depth) {
     generateLegalMoves(board, moves);
 
     int scores[256];
-    score_moves(moves, scores, Move{0}, Move{0});
+    score_moves(moves, scores, Move{0}, Move{0}, Move{0});
 
     Move best_move = moves.moves[0];
     int best_score = -INF;
@@ -229,7 +256,7 @@ Move search_best_move_id(Board& board, int max_depth, int movetime_ms) {
 
     for (int current_depth = 1; current_depth <= max_depth; ++current_depth) {
         int scores[256];
-        score_moves(moves, scores, Move{0}, Move{0});
+        score_moves(moves, scores, Move{0}, Move{0}, Move{0});
 
         bool search_completed = true;
         int best_score = -INF;
