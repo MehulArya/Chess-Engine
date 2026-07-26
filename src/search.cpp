@@ -29,6 +29,66 @@ static void score_moves(MoveList& moves, int* scores, Move killer1, Move killer2
     }
 }
 
+static int quiescence(Board& board, int alpha, int beta, int ply) {
+    int stand_pat = evaluate(board);
+
+    if (stand_pat >= beta) {
+        return beta;
+    }
+    if (stand_pat > alpha) {
+        alpha = stand_pat;
+    }
+
+    MoveList moves;
+    generateLegalMoves(board, moves);
+
+    int scores[256];
+    score_moves(moves, scores, Move{0}, Move{0});
+
+    for (std::size_t i = 0; i < moves.count; ++i) {
+        std::size_t best_idx = i;
+        int best_score = scores[i];
+
+        for (std::size_t j = i + 1; j < moves.count; ++j) {
+            if (scores[j] > best_score) {
+                best_score = scores[j];
+                best_idx = j;
+            }
+        }
+
+        if (best_idx != i) {
+            std::swap(moves.moves[i], moves.moves[best_idx]);
+            std::swap(scores[i], scores[best_idx]);
+        }
+
+        if (!moves.moves[i].is_capture()) continue;
+
+        Undo undo;
+        undo.move = moves.moves[i];
+        undo.captured = board.pieceAt(moves.moves[i].to());
+        undo.castling_rights = board.castling_rights;
+        undo.ep_square = board.ep_square;
+        undo.halfmove_clock = board.halfmove_clock;
+        undo.fullmove_number = board.fullmove_number;
+        undo.zobrist_key = board.zobrist_key;
+
+        board.makeMove(moves.moves[i]);
+
+        int score = -quiescence(board, -beta, -alpha, ply + 1);
+
+        board.unmakeMove(undo);
+
+        if (score >= beta) {
+            return beta;
+        }
+        if (score > alpha) {
+            alpha = score;
+        }
+    }
+
+    return alpha;
+}
+
 int alpha_beta(Board& board, int depth, int alpha, int beta, int ply) {
     static Move killer_moves[MAX_PLY][2];
     static bool killers_initialized = false;
@@ -41,7 +101,7 @@ int alpha_beta(Board& board, int depth, int alpha, int beta, int ply) {
     }
 
     if (depth == 0) {
-        return evaluate(board);
+        return quiescence(board, alpha, beta, ply);
     }
 
     MoveList moves;
