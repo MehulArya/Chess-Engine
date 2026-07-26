@@ -80,18 +80,18 @@ void uci_loop() {
                 }
             }
         } else if (token == "go") {
-            int depth = 4;
+            int depth = 64;
+            int movetime = 5000;
             std::string param;
             while (iss >> param) {
                 if (param == "depth") {
                     iss >> depth;
                 } else if (param == "movetime") {
-                    iss >> depth;
-                    depth = 4;
+                    iss >> movetime;
                 }
             }
 
-            Move best = search_best_move(board, depth);
+            Move best = search_best_move_id(board, depth, movetime);
             std::cout << "bestmove " << move_to_uci(best) << std::endl;
         } else if (token == "quit") {
             break;

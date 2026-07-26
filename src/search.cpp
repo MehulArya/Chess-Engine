@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <climits>
 #include <cstring>
+#include <chrono>
 
 static const int INF = 32000;
 
@@ -58,9 +59,6 @@ int alpha_beta(Board& board, int depth, int alpha, int beta, int ply) {
     Move killer2 = (ply < MAX_PLY) ? killer_moves[ply][1] : Move{0};
     score_moves(moves, scores, killer1, killer2);
 
-    int best_score_in_branch = -INF;
-    Move best_move_in_branch = moves.moves[0];
-
     for (std::size_t i = 0; i < moves.count; ++i) {
         std::size_t best_idx = i;
         int best_score = scores[i];
@@ -91,11 +89,6 @@ int alpha_beta(Board& board, int depth, int alpha, int beta, int ply) {
         int score = -alpha_beta(board, depth - 1, -beta, -alpha, ply + 1);
 
         board.unmakeMove(undo);
-
-        if (score > best_score_in_branch) {
-            best_score_in_branch = score;
-            best_move_in_branch = moves.moves[i];
-        }
 
         if (score >= beta) {
             if (ply < MAX_PLY) {
@@ -161,6 +154,73 @@ Move search_best_move(Board& board, int depth) {
         if (score > best_score) {
             best_score = score;
             best_move = moves.moves[i];
+        }
+    }
+
+    return best_move;
+}
+
+Move search_best_move_id(Board& board, int max_depth, int movetime_ms) {
+    MoveList moves;
+    generateLegalMoves(board, moves);
+
+    Move best_move = moves.moves[0];
+    auto start_time = std::chrono::steady_clock::now();
+
+    for (int current_depth = 1; current_depth <= max_depth; ++current_depth) {
+        int scores[256];
+        score_moves(moves, scores, Move{0}, Move{0});
+
+        bool search_completed = true;
+        int best_score = -INF;
+        Move depth_best = moves.moves[0];
+
+        for (std::size_t i = 0; i < moves.count; ++i) {
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_time).count();
+            if (elapsed >= movetime_ms) {
+                search_completed = false;
+                break;
+            }
+
+            std::size_t best_idx = i;
+            int best_scr = scores[i];
+
+            for (std::size_t j = i + 1; j < moves.count; ++j) {
+                if (scores[j] > best_scr) {
+                    best_scr = scores[j];
+                    best_idx = j;
+                }
+            }
+
+            if (best_idx != i) {
+                std::swap(moves.moves[i], moves.moves[best_idx]);
+                std::swap(scores[i], scores[best_idx]);
+            }
+
+            Undo undo;
+            undo.move = moves.moves[i];
+            undo.captured = board.pieceAt(moves.moves[i].to());
+            undo.castling_rights = board.castling_rights;
+            undo.ep_square = board.ep_square;
+            undo.halfmove_clock = board.halfmove_clock;
+            undo.fullmove_number = board.fullmove_number;
+            undo.zobrist_key = board.zobrist_key;
+
+            board.makeMove(moves.moves[i]);
+
+            int score = -alpha_beta(board, current_depth - 1, -INF, INF, 1);
+
+            board.unmakeMove(undo);
+
+            if (score > best_score) {
+                best_score = score;
+                depth_best = moves.moves[i];
+            }
+        }
+
+        if (search_completed) {
+            best_move = depth_best;
         }
     }
 
