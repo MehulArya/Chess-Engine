@@ -6,7 +6,7 @@ The project is being built from scratch to explore engine architecture: compact 
 
 ## Current Status
 
-The engine has moved past foundation-building and can now play legal chess through UCI.
+The engine can now play legal chess through UCI with a functioning search, evaluation, and time management.
 
 Implemented so far:
 
@@ -25,19 +25,19 @@ Implemented so far:
 - Precomputed knight, king, and pawn attack tables
 - Sliding attacks for bishops, rooks, and queens
 - Zobrist key generation for board positions
-- **Evaluation function** with material values and piece-square tables
-- **Alpha-beta search** with negamax framework
-- **Full UCI protocol loop** (uci, isready, ucinewgame, position, go depth/movetime, quit)
+- Evaluation function with material values and piece-square tables
+- Alpha-beta search with negamax framework
+- **Move ordering with MVV-LVA and killer heuristic**
+- **Iterative deepening for time-managed search**
+- **Quiescence search for tactical accuracy**
+- **Transposition table with Zobrist key caching**
+- Full UCI protocol loop
 - CMake build setup with warning configuration and optional sanitizers
 - Catch2 test target scaffold
 
 Still in progress:
 
 - Perft validation
-- Transposition table
-- Iterative deepening
-- Quiescence search
-- Move ordering
 - Advanced evaluation (pawn structure, king safety, mobility)
 
 ## Project Structure
@@ -50,7 +50,8 @@ Still in progress:
 | `src/attacks.h`, `src/attacks.cpp` | Piece attack tables and sliding attack generation |
 | `src/zobrist.h` | Zobrist hash declarations |
 | `src/eval.h`, `src/eval.cpp` | Evaluation function with material + piece-square tables |
-| `src/search.h`, `src/search.cpp` | Alpha-beta search with negamax |
+| `src/search.h`, `src/search.cpp` | Alpha-beta search with move ordering, iterative deepening, quiescence |
+| `src/tt.h`, `src/tt.cpp` | Transposition table for caching evaluated positions |
 | `src/uci_like.h`, `src/uci_like.cpp` | UCI protocol loop |
 | `src/main.cpp` | Entry point that initializes tables and starts UCI loop |
 | `tests/` | Catch2 test target |
@@ -236,7 +237,7 @@ The starting position evaluates to approximately 340 centipawns (not 0) because 
 
 ## Search
 
-The search module (`search.cpp`) implements the negamax variant of alpha-beta pruning. This is the standard search framework used by virtually all modern chess engines.
+The search module (`search.cpp`) implements the negamax variant of alpha-beta pruning with four key enhancements: move ordering, iterative deepening, quiescence search, and a transposition table.
 
 ### Alpha-Beta Pruning
 
@@ -251,39 +252,111 @@ If at any point `score >= beta`, the branch is pruned (the opponent can force a 
 The negamax formulation simplifies implementation:
 ```
 alpha_beta(board, depth, alpha, beta, ply):
-    if depth == 0: return evaluate(board)
+    if depth == 0: return quiescence(board, alpha, beta)
     
+    probe transposition table
     generate legal moves
     if no legal moves:
         if in check: return -INF + ply  (mate)
         else: return 0                   (stalemate)
+    
+    score moves (TT best move first, then captures, then killers)
+    sort moves by score
     
     for each move:
         make move
         score = -alpha_beta(board, depth-1, -beta, -alpha, ply+1)
         unmake move
         
-        if score >= beta: return beta    (prune)
-        if score > alpha: alpha = score
+        if score >= beta:
+            store TT entry (LOWER bound)
+            update killer moves
+            return beta
+        if score > alpha:
+            alpha = score
+            store best move
     
+    store TT entry (EXACT if alpha improved, UPPER otherwise)
     return alpha
 ```
-
-The `-INF + ply` scoring ensures that among different forced mates, the engine prefers the shortest mate (lowest ply gets a higher score because less was subtracted from INF).
 
 <p align="center">
   <img src="images/alpha_beta.svg" alt="Alpha-Beta Pruning" width="580">
 </p>
 
-### search_best_move()
+### Move Ordering
 
-Root-level function that wraps alpha-beta to find the best move at a given depth:
-1. Generate all legal moves at the root
-2. For each move, make it, call `alpha_beta(depth-1, -INF, INF, 1)`, unmake it
-3. Track the move with the highest score
-4. Return the best move
+Alpha-beta pruning only works well when the best moves are searched first. Without ordering, almost no pruning occurs, making depth 3+ very slow. The engine uses three techniques to order moves:
 
-Depth 1 only looks at direct consequences of each move (evaluation after the move). Depth 2 considers one opponent response. Depth N considers N plies (half-moves) ahead.
+**1. Transposition Table Best Move (highest priority)**
+When a position is found in the transposition table, the best move from the previous search is given priority score 100000. This move is likely the best at this position again.
+
+**2. MVV-LVA (Most Valuable Victim - Least Valuable Attacker)**
+Captures are scored as `victim_value * 10 - attacker_value`. This ensures captures of high-value pieces by low-value pieces are searched first:
+- Q x pawn (9000 - 1 = 8999) searched before P x Q (1000 - 100 = 900)
+- The engine finds refutations faster because winning captures are explored first
+
+**3. Killer Heuristic**
+Non-capture moves that caused beta cutoffs at a given ply are tracked in a `killer_moves[MAX_PLY][2]` array. These moves get priority score 50000 — searched before other quiet moves but after captures. If a move refuted the opponent's move at this ply once, it is likely to work again.
+
+### Iterative Deepening
+
+Instead of searching a single fixed depth, `search_best_move_id()` starts at depth 1 and increases depth by 1 each iteration until either the target depth is reached or the allocated time runs out. If time runs out mid-iteration, the best move from the last fully completed depth is returned.
+
+This provides two benefits:
+- **Time management**: The engine can respond to `go movetime 5000` by searching as deep as possible within 5 seconds
+- **Move ordering feedback**: Previous shallow searches populate the transposition table, so deeper searches start with better move ordering from cached results
+
+The function signature:
+```
+Move search_best_move_id(Board& board, int max_depth, int movetime_ms)
+```
+The UCI handler calls this with max_depth=64 by default and the specified movetime (default 5000ms).
+
+### Quiescence Search
+
+The horizon effect is a fundamental problem in chess engines: a tactical sequence (like a queen capture) may be just one ply beyond the search depth, so the engine evaluates the position before the capture and misses it entirely.
+
+Quiescence search solves this by extending the search at leaf nodes:
+1. Evaluate the current position (stand-pat)
+2. If stand-pat >= beta, return beta immediately (standing pat is good enough)
+3. If stand-pat > alpha, raise alpha
+4. Generate all legal moves, but only search captures
+5. For each capture, make the move and recursively call quiescence
+6. Continue until no more captures exist and the position is "quiet"
+
+The `alpha_beta()` function calls `quiescence()` at depth 0 instead of `evaluate()`, so all leaf positions are resolved to a quiet state before scoring.
+
+### Transposition Table
+
+The same chess position can be reached through different move orders (e.g., 1.e4 e5 2.Nf3 vs 1.Nf3 e5 2.e4). Without a transposition table, the engine searches the same position multiple times, wasting computation.
+
+**Implementation (`tt.h`, `tt.cpp`):**
+- 1,048,576 entry hash table (~8MB for TTEntry structs)
+- Indexed by `key & (TABLE_SIZE - 1)` for fast power-of-2 modulo
+- Each entry stores:
+  - `key`: Full 64-bit Zobrist key for verification
+  - `score`: The evaluation score from the previous search
+  - `best_move`: The best move found at this position
+  - `depth`: The search depth that produced this result
+  - `flag`: One of three types:
+    - `TT_EXACT`: Exact score (alpha improved during search)
+    - `TT_LOWER`: Beta cutoff occurred, score is a lower bound
+    - `TT_UPPER`: No move improved alpha, score is an upper bound
+
+**Probe behavior in alpha_beta:**
+1. Look up the position's Zobrist key in the table
+2. If found and the stored depth >= current search depth:
+   - If EXACT → return the cached score immediately
+   - If LOWER and score >= beta → return beta (prune)
+   - If UPPER and score <= alpha → return alpha (prune)
+3. In all cases, use the stored best_move for move ordering (highest priority)
+
+**Store behavior:**
+- After searching all moves, store with EXACT if alpha improved, UPPER otherwise
+- On beta cutoff, store with LOWER bound
+- Always store the best move found for future move ordering
+- Only replace if the new search is at least as deep as the stored entry (depth-preferred replacement)
 
 ## UCI Protocol
 
@@ -307,12 +380,12 @@ The engine parses each move string using `parse_uci_move()`, then constructs the
 
 **position fen <fen> [moves ...]**: Same as above, but loads a custom FEN position first instead of the starting position.
 
-**go depth <N>**: Tells the engine to search to depth N. The engine calls `search_best_move(board, depth)` and outputs:
+**go depth <N>**: Tells the engine to search to depth N using iterative deepening. The engine calls `search_best_move_id(board, N, 5000)` and outputs:
 ```
 bestmove e2e4
 ```
 
-**go movetime <ms>**: For now, this uses a default depth of 4. Time management is a future enhancement.
+**go movetime <ms>**: Tells the engine to search for the specified number of milliseconds. The engine calls `search_best_move_id(board, 64, movetime)` and searches as deep as possible within the time limit.
 
 **quit**: Exits the loop cleanly.
 
@@ -365,11 +438,7 @@ The current test suite covers UCI move parsing/formatting, FEN roundtrips for bo
 Next milestones:
 
 1. Add perft tests for move generation validation.
-2. Implement iterative deepening for time-managed search (depth increases until time runs out).
-3. Add move ordering (MVV-LVA captures first, killer heuristic for quiet moves) to improve alpha-beta pruning efficiency.
-4. Implement quiescence search to resolve tactical sequences (captures, checks) at leaf nodes instead of relying on the static evaluation.
-5. Add a transposition table backed by Zobrist keys to avoid re-searching the same position.
-6. Advanced evaluation features: pawn structure (doubled, isolated, passed pawns), king safety (pawn shield), piece mobility, and bishop pair bonus.
+2. Advanced evaluation features: pawn structure (doubled, isolated, passed pawns), king safety (pawn shield), piece mobility, and bishop pair bonus.
 
 ## Goal
 
