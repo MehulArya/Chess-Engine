@@ -38,7 +38,6 @@ Implemented so far:
 Still in progress:
 
 - Perft validation
-- Advanced evaluation (pawn structure, king safety, mobility)
 
 ## Project Structure
 
@@ -232,6 +231,55 @@ The `evaluate()` function loops through all 64 squares:
 2. Look up the piece value and PST value for the piece on this square
 3. For white pieces: add piece_value + PST[sq] to the score
 4. For black pieces: subtract piece_value + PST[sq] from the score (using the same PST table since black's pieces are mirrored)
+
+After computing the material + PST baseline, four additional evaluation terms are added:
+
+```
+score = material + pst 
+     + pawn_structure_score(board)
+     + king_safety_score(board)
+     + mobility_score(board)
+     + bishop_pair_score(board)
+```
+
+### Advanced Evaluation Terms
+
+#### Pawn Structure
+
+Three pawn structure features are evaluated per color:
+
+**Doubled pawns (-15 per extra pawn on a file)**: When two or more pawns of the same color occupy the same file, each pawn beyond the first incurs a penalty. Doubled pawns cannot defend each other and block each other's advancement. For example, white pawns on e3 and e5 are not doubled (different ranks on same file is normal), but white pawns on e3 and e4 on the same file are doubled after a capture.
+
+**Isolated pawns (-20)**: A pawn with no friendly pawns on either adjacent file (a-file or h-file only has one adjacent side). Isolated pawns cannot be defended by other pawns and are permanent targets. For example, a white pawn on d4 with no pawns on c-file or e-file is isolated.
+
+**Passed pawns (bonus = rank * rank)**: A pawn with no enemy pawns blocking its path to promotion on the same file. The bonus scales quadratically with rank — a pawn on the 2nd rank gets +4, on the 6th rank gets +36, on the 7th rank gets +49. Passed pawns are extremely dangerous in endgames because they threaten to promote.
+
+#### King Safety
+
+The king safety evaluation checks whether each king has an adequate pawn shield in front of its castled position:
+
+- Only applies when the king is on the 1st rank (white) or 8th rank (black) — i.e., castled or still at home
+- Checks 3 files in front of the king: if king is on g1, checks files f, g, h; if king is on c1, checks files a, b, c
+- Counts friendly pawns in the first 3 ranks in front of the king
+- If fewer than 3 pawns are present, applies a penalty of -15 per missing pawn
+- For example, after kingside castling with pawns on f2, g2, h2 → shield_count=3, no penalty. If the f-pawn is traded off → shield_count=2, penalty of -15
+
+#### Piece Mobility
+
+For each knight, bishop, rook, and queen, the engine counts the number of squares it can reach (excluding squares occupied by friendly pieces):
+
+- Uses the existing `attacks::knight()`, `attacks::bishop()`, `attacks::rook()`, `attacks::queen()` functions with the board occupancy
+- Each legal target square counts as +1 to mobility (positive for white, negative for black)
+- Knights in the center naturally score higher mobility (8 possible squares vs 2-4 on the rim)
+- Rooks on open files score higher than rooks behind pawns
+- The mobility values are not weighted by piece type — a knight move counts the same as a queen move, ensuring the eval stays conservative
+
+#### Bishop Pair
+
+If a side has two or more bishops, add a +30 centipawn bonus:
+- Having both bishops covers all squares of both colors
+- The bonus is applied regardless of pawn structure or piece activity
+- This compensates for the bishop being worth only 10 more than a knight in the material values
 
 The starting position evaluates to approximately 340 centipawns (not 0) because both sides' pieces start on their optimal squares and the bonuses add up symmetrically. This is fine because chess engines only care about the *difference* in evaluation between positions, not the absolute value.
 
@@ -438,7 +486,6 @@ The current test suite covers UCI move parsing/formatting, FEN roundtrips for bo
 Next milestones:
 
 1. Add perft tests for move generation validation.
-2. Advanced evaluation features: pawn structure (doubled, isolated, passed pawns), king safety (pawn shield), piece mobility, and bishop pair bonus.
 
 ## Goal
 

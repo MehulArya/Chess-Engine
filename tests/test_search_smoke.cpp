@@ -5,6 +5,7 @@
 #include "attacks.h"
 #include "zobrist.h"
 #include <catch2/catch_test_macros.hpp>
+#include <cstdlib>
 
 TEST_CASE("Evaluation is symmetric for starting position", "[eval]") {
     attacks::init();
@@ -84,4 +85,54 @@ TEST_CASE("Evaluation is deterministic", "[eval]") {
     int s1 = evaluate(board);
     int s2 = evaluate(board);
     REQUIRE(s1 == s2);
+}
+
+TEST_CASE("Doubled pawns get penalty", "[eval]") {
+    attacks::init();
+    zobrist::init();
+    Board no_doubled;
+    no_doubled.setFen("8/8/8/8/8/8/PPPPPPPP/8 w - - 0 1");
+    Board doubled;
+    doubled.setFen("8/8/8/8/8/8/PPP1PPP1/8 w - - 0 1");
+    REQUIRE(evaluate(doubled) < evaluate(no_doubled));
+}
+
+TEST_CASE("Isolated pawns get penalty", "[eval]") {
+    attacks::init();
+    zobrist::init();
+    Board connected;
+    connected.setFen("8/8/8/8/8/8/PP6/8 w - - 0 1");
+    Board isolated;
+    isolated.setFen("8/8/8/8/8/8/P7/8 w - - 0 1");
+    REQUIRE(evaluate(isolated) < evaluate(connected));
+}
+
+TEST_CASE("Bishop pair gives bonus", "[eval]") {
+    attacks::init();
+    zobrist::init();
+    Board two_bishops;
+    two_bishops.setFen("8/8/8/8/8/8/8/2B1KB2 w - - 0 1");
+    Board two_knights;
+    two_knights.setFen("8/8/8/8/8/8/8/2N1KN2 w - - 0 1");
+    REQUIRE(evaluate(two_bishops) > evaluate(two_knights));
+}
+
+TEST_CASE("Mobility bonus for active pieces", "[eval]") {
+    attacks::init();
+    zobrist::init();
+    Board center_knight;
+    center_knight.setFen("8/8/8/8/3N4/8/8/8 w - - 0 1");
+    Board corner_knight;
+    corner_knight.setFen("8/8/8/8/8/8/8/N7 w - - 0 1");
+    REQUIRE(evaluate(center_knight) > evaluate(corner_knight));
+}
+
+TEST_CASE("King safety penalizes missing pawn shield", "[eval]") {
+    attacks::init();
+    zobrist::init();
+    Board castled;
+    castled.setFen("5rk1/5ppp/8/8/8/8/5PPP/5RK1 w - - 0 1");
+    Board exposed;
+    exposed.setFen("5rk1/8/8/8/8/8/8/5RK1 w - - 0 1");
+    REQUIRE(evaluate(castled) > evaluate(exposed));
 }
