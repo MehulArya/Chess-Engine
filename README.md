@@ -469,7 +469,97 @@ Run the engine:
 ./build/chesscli
 ```
 
-The engine starts in UCI mode and waits for commands from stdin. For interactive use, pipe input or connect via a GUI.
+The engine starts in UCI mode and waits for commands from stdin.
+
+## Usage
+
+The engine speaks the Universal Chess Interface (UCI) protocol. You can interact with it by typing commands directly or piping them in.
+
+### Interactive Mode (type commands manually)
+
+```bash
+./build/chesscli
+```
+
+Type commands line by line. Each command produces immediate output:
+
+```
+uci                  → id name ClassicChess
+                        id author Chess-Engine
+                        uciok
+isready              → readyok
+position startpos    → (sets up starting position, no output)
+position startpos moves e2e4 e7e5 g1f3
+                     → (plays 1.e4 e5 2.Nf3, no output)
+go depth 4           → bestmove f1b5  (after a few seconds)
+quit                 → (exits)
+```
+
+### Pipe Mode (script a game)
+
+Send commands all at once via pipe:
+
+```bash
+printf "uci\nisready\nposition startpos\ngo depth 4\nquit\n" | ./build/chesscli
+```
+
+Or from a file:
+
+```bash
+echo "uci" > game.txt
+echo "isready" >> game.txt
+echo "position startpos moves e2e4 e7e5 g1f3" >> game.txt
+echo "go depth 4" >> game.txt
+echo "quit" >> game.txt
+./build/chesscli < game.txt
+```
+
+### Supported Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `uci` | Initialize engine, get engine info | `uci` |
+| `isready` | Check if engine is ready | `isready` |
+| `ucinewgame` | Reset to starting position | `ucinewgame` |
+| `position startpos` | Set up starting position | `position startpos` |
+| `position startpos moves ...` | Starting position + moves | `position startpos moves e2e4` |
+| `position fen <FEN>` | Set up custom position | `position fen rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1` |
+| `position fen <FEN> moves ...` | Custom position + moves | `position fen ... moves d7d5` |
+| `go depth N` | Search to depth N | `go depth 4` |
+| `go movetime N` | Search for N milliseconds | `go movetime 3000` |
+| `quit` | Exit the engine | `quit` |
+
+### Move Format (UCI)
+
+Moves are 4-5 character strings:
+- `e2e4` — Pawn from e2 to e4
+- `g1f3` — Knight from g1 to f3
+- `e7e8q` — Pawn promotes to queen (5th char = q/r/b/n)
+- `e1g1` — Kingside castle (engine detects castling from piece + squares)
+- `d7d5` — Pawn from d7 to d5
+
+### Playing a Full Game (Step by Step)
+
+```
+# Terminal 1: Start the engine
+./build/chesscli
+
+# Then type each command and wait for the response:
+uci
+isready
+position startpos     ← White's turn
+go depth 4             ← Engine outputs: bestmove e2e4
+
+# Play your move:
+position startpos moves e2e4 ← Now it's Black's turn
+go depth 4             ← Engine outputs Black's response
+
+# Continue:
+position startpos moves e2e4 e7e5
+go depth 4             ← Engine outputs bestmove for White again
+```
+
+The engine alternates sides automatically — after each `position ... moves` sequence, the side to move flips. The `go` command always searches for the side whose turn it is.
 
 ## Tests
 
